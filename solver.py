@@ -15,7 +15,7 @@ from nltk.translate.bleu_score import corpus_bleu
 
 
 
-def train(train_loader, encoder, decoder, criterion, decoder_optimizer, epoch, device, grad_clip, print_freq, alpha_c = 1.):
+def train(train_loader, encoder, decoder, criterion, decoder_optimizer, epoch, device, grad_clip, print_freq, history, alpha_c = 1.):
     """
     Performs one epoch's training.
 
@@ -100,7 +100,16 @@ def train(train_loader, encoder, decoder, criterion, decoder_optimizer, epoch, d
                                                                           batch_time=batch_time,
                                                                           data_time=data_time, loss=losses,
                                                                           top5=top5accs))
-def validate(val_loader, encoder, decoder, criterion, device, print_freq, word_map, alpha_c = 1.):
+            history.append('Epoch: [{0}][{1}/{2}]\t'
+                  'Batch Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                  'Data Load Time {data_time.val:.3f} ({data_time.avg:.3f})\t'
+                  'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+                  'Top-5 Accuracy {top5.val:.3f} ({top5.avg:.3f})'.format(epoch, i, len(train_loader),
+                                                                          batch_time=batch_time,
+                                                                          data_time=data_time, loss=losses,
+                                                                          top5=top5accs))
+            
+def validate(val_loader, encoder, decoder, criterion, device, print_freq, word_map, history, alpha_c = 1.):
     """
     Performs one epoch's validation.
 
@@ -128,7 +137,7 @@ def validate(val_loader, encoder, decoder, criterion, device, print_freq, word_m
     with torch.no_grad():
         # Batches
         for i, (imgs, caps, caplens, allcaps) in enumerate(val_loader):
-#             if i >= len(val_loader)/8:
+#             if i >= len(val_loader)/4:
 #                 break
 
             # Move to device, if available
@@ -174,6 +183,11 @@ def validate(val_loader, encoder, decoder, criterion, device, print_freq, word_m
                       'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
                       'Top-5 Accuracy {top5.val:.3f} ({top5.avg:.3f})\t'.format(i, len(val_loader), batch_time=batch_time,
                                                                                 loss=losses, top5=top5accs))
+                history.append('Validation: [{0}/{1}]\t'
+                      'Batch Time {batch_time.val:.3f} ({batch_time.avg:.3f})\t'
+                      'Loss {loss.val:.4f} ({loss.avg:.4f})\t'
+                      'Top-5 Accuracy {top5.val:.3f} ({top5.avg:.3f})\t'.format(i, len(val_loader), batch_time=batch_time,
+                                                                                loss=losses, top5=top5accs))
 
             # Store references (true captions), and hypothesis (prediction) for each image
             # If for n images, we have n hypotheses, and references a, b, c... for each image, we need -
@@ -202,8 +216,11 @@ def validate(val_loader, encoder, decoder, criterion, device, print_freq, word_m
         # Calculate BLEU-4 scores
         bleu4 = corpus_bleu(references, hypotheses)
 
-        print(
-            '\n * LOSS - {loss.avg:.3f}, TOP-5 ACCURACY - {top5.avg:.3f}, BLEU-4 - {bleu}\n'.format(
+        print('\n * LOSS - {loss.avg:.3f}, TOP-5 ACCURACY - {top5.avg:.3f}, BLEU-4 - {bleu}\n'.format(
+                loss=losses,
+                top5=top5accs,
+                bleu=bleu4))
+        history.append('\n * LOSS - {loss.avg:.3f}, TOP-5 ACCURACY - {top5.avg:.3f}, BLEU-4 - {bleu}\n'.format(
                 loss=losses,
                 top5=top5accs,
                 bleu=bleu4))
@@ -241,6 +258,7 @@ def backprop_deep(encoder, decoder, data_folder, data_name, word_map, epochs = 1
         decoder_optimizer = torch.optim.Adam(params=filter(lambda p: p.requires_grad, decoder.parameters()),
                                          lr=decoder_lr)
         start_epoch = 0
+        history = []
         
     else:
         checkpoint = torch.load(checkpoint)
@@ -250,6 +268,7 @@ def backprop_deep(encoder, decoder, data_folder, data_name, word_map, epochs = 1
         decoder = checkpoint['decoder']
         decoder_optimizer = checkpoint['decoder_optimizer']
         encoder = checkpoint['encoder']
+        history = checkpoint['history']
         
         ## reload from previous models
 #         encoder.encoder_model = 'resnet101'
@@ -294,7 +313,8 @@ def backprop_deep(encoder, decoder, data_folder, data_name, word_map, epochs = 1
               device = device,
               grad_clip = grad_clip,
               print_freq = print_freq,
-              alpha_c = alpha_c)
+              alpha_c = alpha_c,
+              history = history)
 
         # One epoch's validation
         recent_bleu4 = validate(val_loader=val_loader,
@@ -304,7 +324,8 @@ def backprop_deep(encoder, decoder, data_folder, data_name, word_map, epochs = 1
                                 device = device,
                                 print_freq = print_freq,
                                 word_map = word_map,
-                                alpha_c = alpha_c)
+                                alpha_c = alpha_c,
+                                history = history)
 
         # Check if there was an improvement
         is_best = recent_bleu4 > best_bleu4
@@ -312,12 +333,13 @@ def backprop_deep(encoder, decoder, data_folder, data_name, word_map, epochs = 1
         if not is_best:
             epochs_since_improvement += 1
             print("\nEpochs since last improvement: %d\n" % (epochs_since_improvement,))
+            history.append("\nEpochs since last improvement: %d\n" % (epochs_since_improvement,))
         else:
             epochs_since_improvement = 0
 
         # Save checkpoint
         save_checkpoint(data_name, epoch, epochs_since_improvement, encoder, decoder,
-                        decoder_optimizer, recent_bleu4, is_best)
+                        decoder_optimizer, recent_bleu4, is_best, history)
 
 
 
@@ -335,7 +357,7 @@ def clip_gradient(optimizer, grad_clip):
 
 
 def save_checkpoint(data_name, epoch, epochs_since_improvement, encoder, decoder, decoder_optimizer,
-                    bleu4, is_best):
+                    bleu4, is_best, history):
     """
     Saves model checkpoint.
 
@@ -354,7 +376,8 @@ def save_checkpoint(data_name, epoch, epochs_since_improvement, encoder, decoder
              'bleu-4': bleu4,
              'encoder': encoder,
              'decoder': decoder,
-             'decoder_optimizer': decoder_optimizer}
+             'decoder_optimizer': decoder_optimizer,
+             'history': history}
     filename = 'checkpoint_'+ encoder.encoder_model + '_' + decoder.decoder_model + '_' + data_name + '.pth.tar'
     torch.save(state, filename)
     # If this checkpoint is the best so far, store a copy so it doesn't get overwritten by a worse checkpoint
