@@ -118,7 +118,7 @@ def create_input_files(dataset, karpathy_json_path, image_folder, captions_per_i
                 if len(img.shape) == 2:
                     img = img[:, :, np.newaxis]
                     img = np.concatenate([img, img, img], axis=2)
-                img = resize(img, (256, 256))
+                img = resize(img, (256, 256), , preserve_range = True)
                 img = img.transpose(2, 0, 1)
                 assert img.shape == (3, 256, 256)
                 assert np.max(img) <= 255
@@ -186,9 +186,11 @@ class CaptionDataset(Dataset):
 
     def __getitem__(self, i):
         # Remember, the Nth caption corresponds to the (N // captions_per_image)th image
+
         img = torch.FloatTensor(self.imgs[i // self.cpi] / 255.)
+              
         if self.transform is not None:
-            img = self.transform(img)
+            img = self.transform(img)            
 
         caption = torch.LongTensor(self.captions[i])
 
