@@ -39,7 +39,7 @@ def train(train_loader, encoder, decoder, criterion, decoder_optimizer, epoch, d
 
     # Batches
     for i, (imgs, caps, caplens) in enumerate(train_loader):
-#         if i >= len(train_loader)/8:
+#         if i >= len(train_loader)/8/10:
 #             break        
         data_time.update(time.time() - start)
 
@@ -60,8 +60,8 @@ def train(train_loader, encoder, decoder, criterion, decoder_optimizer, epoch, d
 
         # Remove timesteps that we didn't decode at, or are pads
         # pack_padded_sequence is an easy trick to do this
-        scores, _ = pack_padded_sequence(scores, decode_lengths, batch_first=True)
-        targets, _ = pack_padded_sequence(targets, decode_lengths, batch_first=True)
+        scores = pack_padded_sequence(scores, decode_lengths, batch_first=True).data
+        targets = pack_padded_sequence(targets, decode_lengths, batch_first=True).data
 
         # Calculate loss
         loss = criterion(scores, targets)
@@ -151,8 +151,8 @@ def validate(val_loader, encoder, decoder, criterion, device, print_freq, word_m
             # Remove timesteps that we didn't decode at, or are pads
             # pack_padded_sequence is an easy trick to do this
             scores_copy = scores.clone()
-            scores, _ = pack_padded_sequence(scores, decode_lengths, batch_first=True)
-            targets, _ = pack_padded_sequence(targets, decode_lengths, batch_first=True)
+            scores = pack_padded_sequence(scores, decode_lengths, batch_first=True).data
+            targets = pack_padded_sequence(targets, decode_lengths, batch_first=True).data
 
             # Calculate loss
             loss = criterion(scores, targets)
@@ -216,39 +216,6 @@ def validate(val_loader, encoder, decoder, criterion, device, print_freq, word_m
 
 
 
-# # Data parameters
-# data_folder = '../a-PyTorch-Tutorial-to-Image-Captioning/inputData/'  # folder with data files saved by create_input_files.py
-# data_name = 'coco_5_cap_per_img_5_min_word_freq'  # base name shared by data files
-
-
-
-
-# # Model parameters
-# embed_encoder_dim = 512  # dimension of word embeddings
-# hidden_dim = 512  # dimension of decoder RNN
-# dropout = 0.5
-# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")  # sets device for model and PyTorch tensors
-# print(device)
-
-
-# # Training parameters
-
-
-
-
-# # Read word map
-# word_map_file = os.path.join(data_folder, 'WORDMAP_' + data_name + '.json')
-# with open(word_map_file, 'r') as j:
-#     word_map = json.load(j)
-        
-
-# encoder = Encoder()
-
-# decoder = DecoderWithoutAttention(hidden_dim = hidden_dim, vocab_size =len(word_map),
-#                                       embed_encoder_dim=embed_encoder_dim, dropout=dropout)
-
-
-
 
 def backprop_deep(encoder, decoder, data_folder, data_name, word_map, epochs = 120,  decoder_lr = 4e-4 , checkpoint = None, device = 'cuda', benchmark = False): 
 
@@ -285,10 +252,10 @@ def backprop_deep(encoder, decoder, data_folder, data_name, word_map, epochs = 1
         encoder = checkpoint['encoder']
         
         ## reload from previous models
-        encoder.encoder_model = 'resnet101'
-        encoder.features = encoder.resnet
-        decoder.decoder_model = 'NICA'
-        decoder.device = device
+#         encoder.encoder_model = 'resnet101'
+#         encoder.features = encoder.resnet
+#         decoder.decoder_model = 'NICA'
+#         decoder.device = device
         
 
     # Move to GPU, if available
