@@ -113,10 +113,6 @@ densenet model
 
 The BLEU score of each models.
 
-vgg model
---
-![](./result/vgg_train_loss.png)
-![](./result/vgg_train_loss.png)
 
 resnet model
 --
