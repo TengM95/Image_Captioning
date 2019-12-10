@@ -270,11 +270,6 @@ def backprop_deep(encoder, decoder, data_folder, data_name, word_map, epochs = 1
         encoder = checkpoint['encoder']
         history = checkpoint['history']
         
-        ## reload from previous models
-#         encoder.encoder_model = 'resnet101'
-#         encoder.features = encoder.resnet
-#         decoder.decoder_model = 'NICA'
-#         decoder.device = device
         
 
     # Move to GPU, if available

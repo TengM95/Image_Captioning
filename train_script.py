@@ -8,7 +8,6 @@ from solver import *
 
 
 # Data parameters
-# data_folder = '../a-PyTorch-Tutorial-to-Image-Captioning/inputData/' 
 data_folder = './inputData/'  # folder with data files saved by create_input_files.py
 data_name = 'coco_5_cap_per_img_5_min_word_freq'  # base name shared by data files
 
