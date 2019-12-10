@@ -2,7 +2,7 @@
 
 Description
 ===========
-This is project FOO developed by team BAR composed of John Doe, ...
+This is project Image Captioning developed by team Learning Machine composed of Teng Ma,Shengzhe Zhang,Huaijin Wang,Yuchen Tang.
 Requirements
 ============
 Install package 'imageio' as follow:
