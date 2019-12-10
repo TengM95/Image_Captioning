@@ -21,3 +21,15 @@ Code organization:<br/>
 **train_script.py**: script used to train our model.
 
 
+Results
+============
+
+Here are some captions generated on _test_ images by different models:
+
+---
+
+![](./result/12689Res_resnet_NICA.png)
+
+---
+
+![](./result/1713Res_resnet_NICA.png)
