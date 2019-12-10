@@ -9,11 +9,11 @@ The pre-trained model can be downloaded form [here](https://drive.google.com/ope
 Requirements
 ============
 Code organization:<br/> 
-1.create_input_data.py<br/> -- Preprocess and save the images and captions.
-2.get_train_log.ipynb<br/>  -- Get the train information.
-3.image_caption.ipynb<br/> -- Run the training of our model
-4.evaluate.ipynb<br/> -- Get the performance on test data.
-5.eval_sample.ipynb<br/> -- Run a demo of our code
+1.create_input_data.py -- Preprocess and save the images and captions.<br/>
+2.get_train_log.ipynb -- Get the train information.<br/>
+3.image_caption.ipynb -- Run the training of our model.<br/>
+4.evaluate.ipynb -- Get the performance on test data.<br/>
+5.eval_sample.ipynb -- Run a demo of our code.<br/>
 
 **models.py**: contains encoders,decoders with attention and decoders without attention.<br/>
 **solvers.py**: contains train, validate, backprop, clip_grad, save_checkpoint...functions<br/>
