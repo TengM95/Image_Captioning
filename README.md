@@ -13,8 +13,6 @@ Code organization:<br/>
 4.evaluate.ipynb<br/>
 5.eval_sample.ipynb<br/>
 
--- Run a demo of our code (reproduces Figure 3 of our report) -- Run the training of our model (as described in Section 2) -- Run the adversarial attack as described in Section 3.<br/>
-
 **models.py**: contains encoders,decoders with attention and decoders without attention.<br/>
 **solvers.py**: contains train, validate, backprop, clip_grad, save_checkpoint...functions<br/>
 **create_input_data.py**: script used to fetch the MS COCO datasets.<br/>
