@@ -26,6 +26,22 @@ Results
 
 Here are some captions generated on _test_ images by different models:
 
+
+
+Vgg_NICA model:
+---
+
+![](./result/NICA_sample_vgg.png)
+
+
+Vgg_NIC model:
+---
+
+![](./result/NIC_sample_vgg.JPG)
+
+
+
+Resnet_NICA model:
 ---
 
 ![](./result/12689Res_resnet_NICA.png)
@@ -33,3 +49,81 @@ Here are some captions generated on _test_ images by different models:
 ---
 
 ![](./result/1713Res_resnet_NICA.png)
+
+---
+
+![](./result/i29_Res_resnet_NICA.png)
+
+
+Resnet_NIC model:
+---
+
+![](./result/1713Res_resnet_NIC.png)
+
+---
+
+![](./result/12689Res_resnet_NIC.png)
+
+---
+
+![](./result/i29_Res_resnet_NIC.png)
+
+Densenet_NICA model:
+---
+
+![](./result/horses_1713_NICA_DENSENET.png)
+
+---
+
+![](./result/skateboard_12689_NICA_DENSENET.png)
+
+---
+
+![](./result/sign_i29_nica_densenet.png)
+
+Densenet_NIC model:
+---
+
+![](./result/horses_1713_NIC_DENSENET.png)
+
+---
+
+![](./result/skateboard_12689_NIC_DENSENET.png)
+
+---
+
+![](./result/sign_i29_nic_densenet.png)
+
+
+
+The loss and accuracy of each models.
+
+vgg model
+--
+![](./result/vgg_train_loss.png)
+
+resnet model
+--
+![](./result/resnet101_acc_loss.png)
+
+densenet model
+--
+![](./result/dense_full.png)
+
+
+The BLEU score of each models.
+
+vgg model
+--
+![](./result/vgg_train_loss.png)
+![](./result/vgg_train_loss.png)
+
+resnet model
+--
+![](./result/resnet101_NIC_BLEU.png)
+![](./result/resnet101_NICA_BLEU.png)
+
+densenet model
+--
+![](./result/NIC_DENSENET_BLEU.png)
+![](./result/NICA_DENSENET_BLEU.png)
